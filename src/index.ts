@@ -1,55 +1,25 @@
 import Fastify from 'fastify';
-import { Pool } from 'pg';
-import { randomUUID } from 'crypto';
+import blocksRoutes from './routes/blocks';
+import balancesRoutes from './routes/balances';
+import { createTables } from '../database';
+import fastifyHttpErrorsEnhanced from 'fastify-http-errors-enhanced'
+import type { TypeBoxTypeProvider } from '@fastify/type-provider-typebox'
 
-const fastify = Fastify({ logger: true });
 
-fastify.get('/', async (request, reply) => {
-  return { hello: 'world' };
+const fastify = Fastify({ logger: true }).withTypeProvider<TypeBoxTypeProvider>();
+await fastify.register(fastifyHttpErrorsEnhanced)
+
+
+fastify.get('/', async (_request, _reply) => {
+  return { status: 'OK' };
 });
 
-async function testPostgres(pool: Pool) {
-  const id = randomUUID();
-  const name = 'Satoshi';
-  const email = 'Nakamoto';
-
-  await pool.query(`DELETE FROM users;`);
-
-  await pool.query(`
-    INSERT INTO users (id, name, email)
-    VALUES ($1, $2, $3);
-  `, [id, name, email]);
-
-  const { rows } = await pool.query(`
-    SELECT * FROM users;
-  `);
-
-  console.log('USERS', rows);
-}
-
-async function createTables(pool: Pool) {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      email TEXT NOT NULL
-    );
-  `);
-}
+fastify.register(blocksRoutes)
+fastify.register(balancesRoutes)
 
 async function bootstrap() {
   console.log('Bootstrapping...');
-  const databaseUrl = process.env.DATABASE_URL;
-  if (!databaseUrl) {
-    throw new Error('DATABASE_URL is required');
-  }
-
-  const pool = new Pool({
-    connectionString: databaseUrl
-  });
-
-  await createTables(pool);
-  await testPostgres(pool);
+  await createTables();
 }
 
 try {
@@ -62,3 +32,5 @@ try {
   fastify.log.error(err)
   process.exit(1)
 };
+
+export default fastify;
