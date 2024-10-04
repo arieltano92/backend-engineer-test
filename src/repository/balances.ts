@@ -6,7 +6,6 @@ export async function getBalancesByAddress(addresses : Array<Address>): Promise<
           SELECT address, balance FROM balances WHERE address = ANY($1::text[]);
     `
     const { rows } = await pool.query(query,[addresses])
-    console.log("rowws",rows)
     return rows
 }
 

@@ -29,6 +29,13 @@ or using `Bun`
 bun run-docker
 ```
 
+To run the test you should use the follow command
+
+```bash
+bun run test
+```
+
+
 ## The Challenge
 Your job is to create an indexer that will keep track of the current balance for each address. To do that, you will need to implement the following endpoints:
 

@@ -27,12 +27,10 @@ export function generateNewBalances(addressBalances: AddressBalanceMap, [input]:
             if(addressBalances[input]) addressBalances[input].balance -= output.value
         }else{
             // Case in wich operaiton is ROLLBACK
-            console.log(input, addressBalances[input]?.balance)
             addressBalances[output.address].balance -= output.value
             if(addressBalances[input]) addressBalances[input].balance += output.value
         }
     })
-    console.log(addressBalances)
     return addressBalances
 }
 

@@ -56,4 +56,4 @@ export interface AddressWithBalance {
     value: number;
 }
 
-export type AddressWithBalanceRows = Array<AddressWithBalance>
+export type AddressWithBalanceRows = Array<AddressBalance>
